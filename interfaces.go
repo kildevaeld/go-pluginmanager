@@ -1,6 +1,10 @@
 package pluginmanager
 
-import args "github.com/kildevaeld/go-args"
+import (
+	"encoding/json"
+
+	args "github.com/kildevaeld/go-args"
+)
 
 type Hook int
 
@@ -19,10 +23,14 @@ type PluginManagerOptions struct {
 type PluginFactoryFunc func(plugin Plugin, hook Hook, method string, args args.Argument) (args.Argument, error)
 
 type PluginManifest struct {
-	Name string
-	Type string
-	Main string
-	Path string
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Type    string `json:"type"`
+	Main    string `json:"main"`
+	Path    string `json:"-"`
+
+	Dependencies []string `json:"dependencies"`
+	Features     map[string]json.RawMessage
 }
 
 type Plugin interface {

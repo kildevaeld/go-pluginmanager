@@ -70,6 +70,11 @@ func (p *PluginManager) Close() error {
 	return result
 }
 
+func (p *PluginManager) AddPlugin(pl Plugin) error {
+	p.plugins = append(p.plugins, pl)
+	return nil
+}
+
 func (p *PluginManager) Initialize(fn PluginFactoryFunc, v interface{}) error {
 	var result error
 	for _, plugin := range p.plugins {
