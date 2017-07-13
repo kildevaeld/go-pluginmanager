@@ -11,8 +11,8 @@ import (
 
 	"github.com/aarzilli/golua/lua"
 	"github.com/kildevaeld/go-args"
+	"github.com/kildevaeld/go-pluginmanager"
 	"github.com/kildevaeld/goluaext"
-	"github.com/kildevaeld/pluginmanager"
 	"github.com/stevedonovan/luar"
 )
 

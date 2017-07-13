@@ -8,66 +8,9 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/kildevaeld/pluginmanager"
+	"github.com/kildevaeld/go-pluginmanager"
 	"github.com/mitchellh/mapstructure"
 )
-
-/*
-type call_argument struct {
-	v *luar.LuaObject
-}
-
-func wrap_call(arguments args.Argument) interface{} {
-	return func(state *lua.State) int {
-		defer arguments.Free()
-		a, err := toArguments(state, 1)
-		if err != nil {
-			panic(err)
-		}
-		call := arguments.Value().(args.Call)
-		if a, err = call.Call(a); err != nil {
-			panic(err)
-		} else if a != nil {
-			pushArgument(state, a)
-			return 1
-		}
-
-		return 0
-	}
-}
-
-func (a *call_argument) Call(arguments args.Argument) (args.Argument, error) {
-
-	var out []interface{}
-
-	defer arguments.Free()
-	val := arguments.Value()
-	if arguments.Type() == args.CallType {
-		val = wrap_call(arguments)
-	}
-
-	if err := a.v.Call(&out, val); err != nil {
-		return nil, err
-	}
-
-	var arg args.Argument
-	var err error
-	if len(out) > 0 {
-		if arg, err = args.NewArgument(out[0]); err != nil {
-			return nil, err
-		}
-	}
-
-	return arg, nil
-
-}
-
-func (a *call_argument) Free() {
-	if a.v != nil {
-		a.v.Close()
-		a.v = nil
-	}
-}*/
 
 type LuaProviderOptions struct {
 	Path string
