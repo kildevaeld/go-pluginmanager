@@ -9,6 +9,11 @@ import (
 	"github.com/kildevaeld/go-args"
 )
 
+type PluginManagerOptions struct {
+	Path      string
+	Providers map[string]interface{}
+}
+
 type PluginManager struct {
 	providers map[string]PluginProvider
 	plugins   []Plugin
@@ -34,6 +39,10 @@ func (p *PluginManager) openProviders() error {
 	}
 
 	return nil
+}
+
+func (p *PluginManager) Plugins() []Plugin {
+	return p.plugins
 }
 
 func (p *PluginManager) Open() error {

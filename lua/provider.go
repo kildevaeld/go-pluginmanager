@@ -8,12 +8,14 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/aarzilli/golua/lua"
 	"github.com/kildevaeld/go-pluginmanager"
 	"github.com/mitchellh/mapstructure"
 )
 
 type LuaProviderOptions struct {
-	Path string
+	Path    string
+	Prelude func(state *lua.State) int
 }
 
 type LuaProvider struct {
@@ -70,6 +72,14 @@ func (l *LuaProvider) Open(path string) ([]pluginmanager.Plugin, error) {
 
 		if err := plugin.Open(); err != nil {
 			return nil, err
+		}
+
+		if l.o.Prelude != nil {
+			s := plugin.l
+			s.PushGoFunction(l.o.Prelude)
+			if err := s.Call(0, 0); err != nil {
+				return nil, err
+			}
 		}
 
 		l.p = append(l.p, plugin)

@@ -1,9 +1,10 @@
 package pluginmanager
 
 import (
-	"encoding/json"
+	"errors"
 
 	args "github.com/kildevaeld/go-args"
+	"github.com/mitchellh/mapstructure"
 )
 
 type Hook int
@@ -15,11 +16,6 @@ const (
 
 //type Map map[string]interface{}
 
-type PluginManagerOptions struct {
-	Path      string
-	Providers map[string]interface{}
-}
-
 type PluginFactoryFunc func(plugin Plugin, hook Hook, method string, args args.Argument) (args.Argument, error)
 
 type PluginManifest struct {
@@ -30,7 +26,15 @@ type PluginManifest struct {
 	Path    string `json:"-"`
 
 	Dependencies []string `json:"dependencies"`
-	Features     map[string]json.RawMessage
+	Features     map[string]map[string]interface{}
+}
+
+func (p PluginManifest) GetFeature(name string, out interface{}) error {
+	if p.Features[name] == nil {
+		return errors.New("invalid feature")
+	}
+
+	return mapstructure.Decode(p.Features[name], out)
 }
 
 type Plugin interface {
