@@ -20,7 +20,7 @@ type LuaPlugin struct {
 	manifest    pluginmanager.PluginManifest
 	l           *lua.State
 	path        string
-	log         *zap.SugaredLogger
+	log         *zap.Logger
 	initializer *luar.LuaObject
 	finalizer   *luar.LuaObject
 	fn          pluginmanager.PluginFactoryFunc
@@ -233,7 +233,10 @@ func (l *LuaPlugin) Open() error {
 	os.Setenv("LUA_PATH", oldLuaPath)
 
 	then := time.Now()
-	l.log.Debugw("opening file", zap.String("path", l.path), zap.String("lua_path", luaPath))
+
+	logger := l.log.With(zap.String("path", l.path))
+
+	logger.Debug("Opening plugin main", zap.String("lua_path", luaPath))
 	if err := l.l.DoFile(l.path); err != nil {
 		return err
 	}
@@ -246,7 +249,7 @@ func (l *LuaPlugin) Open() error {
 		return err
 	}
 
-	l.log.Debugw("file opened", zap.Duration("elapsed", time.Since(then)))
+	logger.Debug("Plugin opened", zap.Duration("elapsed", time.Since(then)))
 	return nil
 }
 

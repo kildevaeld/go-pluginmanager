@@ -25,7 +25,7 @@ type LuaProvider struct {
 
 func (l *LuaProvider) Open(path string) ([]pluginmanager.Plugin, error) {
 
-	logger := zap.L().With(zap.String("prefix", "plugins:lua")).Sugar()
+	logger := zap.L().With(zap.String("prefix", "pluginmanager:lua"))
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -34,7 +34,6 @@ func (l *LuaProvider) Open(path string) ([]pluginmanager.Plugin, error) {
 
 	for _, file := range files {
 		if !file.IsDir() {
-			logger.Debugf("skipping %s", file.Name())
 			continue
 		}
 
@@ -42,12 +41,11 @@ func (l *LuaProvider) Open(path string) ([]pluginmanager.Plugin, error) {
 
 		bs, err := ioutil.ReadFile(pkgjson)
 		if err != nil {
-			logger.Debugf("skipping %s", file.Name())
 			continue
 		}
 		var manifest pluginmanager.PluginManifest
 		if err := json.Unmarshal(bs, &manifest); err != nil {
-			logger.Warnf("skipping %s because of invalid manifest", file.Name())
+			logger.Warn("Skipping: invalid manifest", zap.String("plugin_name", file.Name()), zap.Error(err))
 			continue
 		}
 
@@ -61,7 +59,7 @@ func (l *LuaProvider) Open(path string) ([]pluginmanager.Plugin, error) {
 		mainlua := filepath.Join(path, file.Name(), main)
 
 		if _, err := os.Stat(mainlua); err != nil {
-			logger.Warnf("skipping %s: has now main file", file.Name())
+			logger.Warn("Skipping: no main file", zap.String("path", file.Name()))
 		}
 
 		plugin := &LuaPlugin{
@@ -70,6 +68,7 @@ func (l *LuaProvider) Open(path string) ([]pluginmanager.Plugin, error) {
 			log:      logger.With(zap.String("plugin", manifest.Name)),
 		}
 
+		logger.Debug("Opening plugin", zap.String("path", file.Name()), zap.Any("manifest", manifest))
 		if err := plugin.Open(); err != nil {
 			return nil, err
 		}
