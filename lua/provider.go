@@ -10,7 +10,9 @@ import (
 
 	"github.com/aarzilli/golua/lua"
 	"github.com/kildevaeld/go-pluginmanager"
+	"github.com/kildevaeld/goluaext"
 	"github.com/mitchellh/mapstructure"
+	"github.com/stevedonovan/luar"
 )
 
 type LuaProviderOptions struct {
@@ -77,7 +79,10 @@ func (l *LuaProvider) Open(path string) ([]pluginmanager.Plugin, error) {
 			s := plugin.l
 			logger.Debug("Running prelude")
 			s.PushGoFunction(l.o.Prelude)
-			if err := s.Call(0, 0); err != nil {
+			goluaext.CreateTable(s, luar.Map{
+				"name": manifest.Name,
+			}, nil)
+			if err := s.Call(1, 0); err != nil {
 				return nil, err
 			}
 		}
