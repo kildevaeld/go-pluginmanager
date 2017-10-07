@@ -75,10 +75,16 @@ func (l *LuaProvider) Open(path string) ([]pluginmanager.Plugin, error) {
 
 		if l.o.Prelude != nil {
 			s := plugin.l
+			logger.Debug("Running prelude")
 			s.PushGoFunction(l.o.Prelude)
 			if err := s.Call(0, 0); err != nil {
 				return nil, err
 			}
+		}
+
+		logger.Debug("Running plugin")
+		if err := plugin.Run(); err != nil {
+			return nil, err
 		}
 
 		l.p = append(l.p, plugin)

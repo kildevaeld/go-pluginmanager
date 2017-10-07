@@ -232,11 +232,31 @@ func (l *LuaPlugin) Open() error {
 	l.l = goluaext.Init()
 	os.Setenv("LUA_PATH", oldLuaPath)
 
+	//then := time.Now()
+
+	//logger := l.log.With(zap.String("path", l.path))
+
+	/*logger.Debug("Opening plugin main", zap.String("lua_path", luaPath))
+	if err := l.l.DoFile(l.path); err != nil {
+		return err
+	}
+
+	if !l.l.IsTable(-1) {
+		return errors.New("invalid return type")
+	}
+
+	if err := l.init(); err != nil {
+		return err
+	}
+
+	logger.Debug("Plugin opened", zap.Duration("elapsed", time.Since(then)))*/
+	return nil
+}
+
+func (l *LuaPlugin) Run() error {
 	then := time.Now()
-
 	logger := l.log.With(zap.String("path", l.path))
-
-	logger.Debug("Opening plugin main", zap.String("lua_path", luaPath))
+	logger.Debug("Opening plugin main")
 	if err := l.l.DoFile(l.path); err != nil {
 		return err
 	}
